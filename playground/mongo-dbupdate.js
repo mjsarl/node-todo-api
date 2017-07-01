@@ -25,10 +25,10 @@ db.collection('Users').findOneAndUpdate({
   _id: new ObjectID('59569acc0405bf32257a5c9f')
 },{
   $set: {
-    name: 'Lucy Locket'
+    name: 'Lucy Sarl'
   },
   $inc: {
-    age: 2
+    age: -2
   }
 },{
   returnOriginal: false
