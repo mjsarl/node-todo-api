@@ -57,7 +57,7 @@ UserSchema.statics.findByToken = function (token) {
   try {
     decoded = jwt.verify(token, 'secretarmy');
   } catch (e){
-    console.log('Error in decode: ', decoded);
+    //console.log('Error in decode: ', decoded);
     return Promise.reject();
   }
 
