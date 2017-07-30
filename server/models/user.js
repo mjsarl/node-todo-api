@@ -92,12 +92,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
   });
 };
 
-//       res.header('x-auth', user.tokens[0].token).send(user);
-//   }).then((done)=>{
-//
-//     done();
-//   });
-// };
+
 
 UserSchema.pre ('save', function (next) {
   var user = this;

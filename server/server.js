@@ -127,7 +127,9 @@ app.post('/users/login', (req, res) => {
 
   User.findByCredentials(email, password).then((user)=>{
     // console.log('USER returned to server.js = ', user.email);
-    res.send(user);
+    return user.generateAuthToken().then((token)=>{
+      res.header('x-auth', token).send(user);
+    });
   }).catch((e)=>{
     res.status(400).send(e);
   });
