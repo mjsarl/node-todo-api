@@ -5,6 +5,7 @@ const express = require ('express');
 const bodyParser = require('body-parser');
 const {mongoose} = require('./db/mongoose');
 const {ObjectID} = require('mongodb');
+const bcrypt = require('bcryptjs');
 
 
 var {User} = require('./models/user');
@@ -118,6 +119,21 @@ app.get('/users/me', authenticate, (req, res) => {
     res.send(req.user);
 
 });
+
+app.post('/users/login', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var email = body.email;
+  var password = body.password;
+
+  User.findByCredentials(email, password).then((user)=>{
+    // console.log('USER returned to server.js = ', user.email);
+    res.send(user);
+  }).catch((e)=>{
+    res.status(400).send(e);
+  });
+});
+
+
 
 module.exports = {app};
 

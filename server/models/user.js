@@ -68,13 +68,47 @@ UserSchema.statics.findByToken = function (token) {
   });
 };
 
+UserSchema.statics.findByCredentials = function (email, password) {
+
+  var User = this;
+  return User.findOne({email}).then((user) => {
+    if(!user){
+      console.log('not found in DB');
+      return Promise.reject();
+      }
+
+    return new Promise ((resolve, reject)=>{
+      // console.log('USER Password returned -> ', user.password);
+      // console.log('Password used = ', password);
+        bcrypt.compare (password, user.password, (err, res)=>{
+          // console.log('RESULT = ', res);
+          if(!res) {
+            reject();
+          } else {
+          resolve(user);
+        }
+        });
+    });
+  });
+};
+
+//       res.header('x-auth', user.tokens[0].token).send(user);
+//   }).then((done)=>{
+//
+//     done();
+//   });
+// };
+
 UserSchema.pre ('save', function (next) {
   var user = this;
 
-  if(user.isModified){
+  if(user.isModified('password')){
     bcrypt.genSalt(10, (err,salt)=>{
       bcrypt.hash(user.password, salt, (err, hash)=>{
+        //console.log('Password: ', user.password);
         user.password = hash;
+        // console.log('Salt: ', salt);
+        // console.log('Hash: ', hash);
         next();
       });
     } );
