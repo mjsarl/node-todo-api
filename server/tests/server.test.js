@@ -208,7 +208,7 @@ describe('POST /users', ()=>{
         expect(user).toExist();
         expect(user.password).toNotBe(password);
         done();
-      });
+      }).catch((e)=> done());
     });
   });
 
@@ -229,5 +229,49 @@ describe('POST /users', ()=>{
     .expect(400)
     .end(done);
   });
+
+});
+
+describe('POST /users/login', ()=>{
+  it('Should return an authentication token if valid email and password received', (done)=>{
+    // var email = 'mark.sarl@example.com';
+    // var password = 'userOnePass';
+    var email = users[1].email;
+    var password = users[1].password;
+    request(app)
+    .post('/users/login')
+    .send({email, password})
+    .expect(200)
+    .expect((res)=>{
+      expect(res.headers['x-auth']).toExist();
+      expect(res.body._id).toExist();
+      expect(res.body.email).toBe(email);
+    })
+    .end((err)=>{
+      if(err){
+        return done(err);
+      }
+      User.findOne({email}).then((user)=>{
+        expect(user).toExist();
+        expect(user.password).toNotBe(password);
+        expect(user.tokens[0]).toInclude({
+          access: 'auth',
+          token: res.headers['x-auth']
+        });
+        done();
+      }).catch((e)=> done());
+    });
+  });
+
+  it('Should send a 400 if invalid credentials used', (done)=> {
+    var email = 'mark.sarl@example.com';
+    var password = 'xuserOnePass';
+    request(app)
+    .post('/users/login')
+    .send({email, password})
+    .expect(400)
+    .end(done);
+  });
+
 
 });
