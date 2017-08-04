@@ -275,3 +275,24 @@ describe('POST /users/login', ()=>{
 
 
 });
+
+describe ('DELETE /users/me/token', ()=>{
+  it('Should remove auth token when logout is called', (done)=>{
+      var email = users[0].email;
+      request(app)
+      .delete('/users/me/token')
+      .set('x-auth', users[0].tokens[0].token)
+      .expect(200)
+      .end((err)=>{
+        if(err){
+          return done(err);
+        }
+        User.findOne({email}).then((user)=>{
+          expect(user).toExist();
+          expect(user.tokens.length).toBe(0);
+          done();
+        }).catch((e)=> done());
+
+      });
+  });
+});
